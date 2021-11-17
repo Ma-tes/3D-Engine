@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace _3D_Engine
 {
-    public class DoubleBuffer
+    public class DoubleBuffer //TODO Different Name
     {
-        private readonly Bitmap BackupBitmap = new Bitmap(500, 500);
+        private readonly Bitmap BackupBitmap = new Bitmap(500, 500); //TODO Auto X-Y set 
 
         public Bitmap GetMainBitmap() 
         {

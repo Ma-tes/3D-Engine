@@ -12,7 +12,7 @@ namespace _3D_Engine
     {
         protected  WndProc MyDefWndProc = MyWndProc;
         protected  Graphics graphics = Graphics.FromHwnd(IntPtr.Zero);
-        protected  IntPtr WindowHandler = IntPtr.Zero;
+        protected static IntPtr WindowHandler = IntPtr.Zero;
         protected  PS PaintStructure = new();
         public void Update()
         {
@@ -25,17 +25,30 @@ namespace _3D_Engine
                 throw new Exception("Please set WindowHandler to WinAPI");
             }
 
+            float fps = 0;
+            int frame = 0;
+            float elapsedTime = DateTime.Now.Second;
             while (true)
             {
+                frame++;
+                if ((DateTime.Now.Second - elapsedTime) >= 1) 
+                {
+                    fps = frame;
+                    frame = 0;
+                   elapsedTime = DateTime.Now.Second;
+                }
                 doubleBuffer.ChangeGraphics(ref graphics);
                 graphics.Clear(Color.Black);
+
+                //Message stuff
                 PeekMessage(ref msg, WindowHandler, 0, 0, 1);
                 TranslateMessage(ref msg);
                 OnUpdate();
                 DispatchMessage(ref msg);
+
                 graphics = Graphics.FromHwnd(WindowHandler);
                 graphics.DrawImage(doubleBuffer.GetMainBitmap(), new Point(0,0));
-                //SetWindowText(WindowHandler, $"{Ticks}");
+                SetWindowText(WindowHandler, $"{fps}");
             }
         }
         public virtual void OnUpdate()
@@ -127,6 +140,12 @@ namespace _3D_Engine
 
         [DllImport("user32.dll")]
         public static extern IntPtr EndPaint(IntPtr hwnd, ref PS lpPaint);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(ref Point coordinates);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref Rectangle lpRect);
 #endregion
     }
 }

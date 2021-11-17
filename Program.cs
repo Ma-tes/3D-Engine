@@ -19,7 +19,11 @@ namespace _3D_Engine
     internal class WinTestProgram : WinAPI
     {
         public Pen pen = new Pen(Color.White);
-        private Rectangle BoxPositions = new Rectangle(25, 25, 50, 50);
+        private Random random = new Random();
+        private Rectangle BoxPositions = new Rectangle(80, 80, 51, 51);
+        private Point CursorPosition = new Point();
+        private Rectangle WindowPosition = new Rectangle(); 
+
         public void Load()
         {
             var wHandle = new WNDCLASSEX
@@ -52,16 +56,12 @@ namespace _3D_Engine
         }
         public override void OnUpdate() 
         {
-            if (OnInput(ConsoleKey.LeftArrow))
-                BoxPositions.X--;
-            if (OnInput(ConsoleKey.RightArrow))
-                BoxPositions.X++;
-            if (OnInput(ConsoleKey.UpArrow))
-                BoxPositions.Y--;
-            if (OnInput(ConsoleKey.DownArrow))
-                BoxPositions.Y++;
+            GetCursorPos(ref CursorPosition);
+            //Console.WriteLine($"[x] = {CursorPosition.X} [y] = {CursorPosition.Y}");
+            GetWindowRect(WindowHandler, ref WindowPosition);
+            Console.WriteLine($"{WindowPosition.X} {WindowPosition.Left} {CursorPosition.X} {CursorPosition.Y} {Cursor.CursorOnHandle()}");
             graphics.DrawImage(Image.FromFile(@"C:\Users\uzivatel\Desktop\Snímek obrazovky 2021-11-12 220753.jpg"), new Point(BoxPositions.X, BoxPositions.Y));
-            graphics.DrawEllipse(new Pen(Color.Blue), BoxPositions);
+            graphics.DrawEllipse(new Pen(Color.White, 20), BoxPositions);
         }
     }
 }
