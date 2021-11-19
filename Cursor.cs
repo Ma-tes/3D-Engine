@@ -6,24 +6,30 @@ using System.Threading.Tasks;
 using System.Drawing;
 namespace _3D_Engine
 {
-    internal class Cursor : WinAPI
+    sealed class Cursor : WinAPI
     {
         private static Rectangle WindowPositions = new Rectangle();
 
-        private static Point MousePosition = new Point(); 
+        private static Point MousePosition = new Point();
 
+        private static Vector2 LastPosition = Vector2.Zero();
         public static Vector2 GetCursorPosition() 
         {
             GetCursorPos(ref MousePosition);
             GetWindowRect(WindowHandler, ref WindowPositions);
-            return Vector2.Zero();
+            if (CursorOnHandle(WindowPositions, MousePosition) == false)
+                return LastPosition;
+            else
+            {
+                Vector2 CurrentPosition = new Vector2((MousePosition.X - WindowPositions.Left) - 6, (MousePosition.Y - WindowPositions.Top) - 30);
+                LastPosition = CurrentPosition;
+                return CurrentPosition;
+            }
         }
-        public static bool CursorOnHandle() 
+        public static bool CursorOnHandle(Rectangle windowRectangle, Point cursorPositions) 
         {
-            GetCursorPos(ref MousePosition);
-            GetWindowRect(WindowHandler, ref WindowPositions);
-            return ((MousePosition.X >= WindowPositions.Left) && (MousePosition.X <= WindowPositions.Right)) &&
-                   ((MousePosition.Y >= WindowPositions.Top) && (MousePosition.Y <= WindowPositions.Bottom));
+            return (cursorPositions.X >= windowRectangle.Left && cursorPositions.X <= windowRectangle.Right - windowRectangle.Left) &&
+                   (cursorPositions.Y >= windowRectangle.Top && cursorPositions.Y <= windowRectangle.Bottom - windowRectangle.Top);
         }
     }
 }

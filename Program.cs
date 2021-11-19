@@ -57,10 +57,11 @@ namespace _3D_Engine
         public override void OnUpdate() 
         {
             GetCursorPos(ref CursorPosition);
-            //Console.WriteLine($"[x] = {CursorPosition.X} [y] = {CursorPosition.Y}");
+            Vector2 mouseCoord = Cursor.GetCursorPosition();
+            Console.WriteLine($"[x] = {mouseCoord.X} [y] = {mouseCoord.Y}");
             GetWindowRect(WindowHandler, ref WindowPosition);
-            Console.WriteLine($"{WindowPosition.X} {WindowPosition.Left} {CursorPosition.X} {CursorPosition.Y} {Cursor.CursorOnHandle()}");
-            graphics.DrawImage(Image.FromFile(@"C:\Users\uzivatel\Desktop\Snímek obrazovky 2021-11-12 220753.jpg"), new Point(BoxPositions.X, BoxPositions.Y));
+            Image image = Image.FromFile(@"C:\Users\uzivatel\Desktop\Snímek obrazovky 2021-11-12 220753.jpg");
+            graphics.DrawImage(image, new Point(mouseCoord.X - (image.Width / 2), mouseCoord.Y - (image.Height / 2)));
             graphics.DrawEllipse(new Pen(Color.White, 20), BoxPositions);
         }
     }
