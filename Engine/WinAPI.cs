@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using _3D_Engine.WinEnums;
 using _3D_Engine.WinStructs;
+using System.Threading;
 
 namespace _3D_Engine
 {
@@ -12,14 +13,19 @@ namespace _3D_Engine
     {
         protected  WndProc MyDefWndProc = MyWndProc;
         protected  Graphics graphics = Graphics.FromHwnd(IntPtr.Zero);
-        protected static IntPtr WindowHandler = IntPtr.Zero;
+        public static IntPtr WindowHandler = IntPtr.Zero;
         protected  PS PaintStructure = new();
+        private DoubleBuffer doubleBuffer = new DoubleBuffer();
+
+        private void ClearBuffer(object callback) 
+        {
+            while (true) 
+            {
+            }
+        }
         public void Update()
         {
             MSG msg = new MSG();
-            graphics = Graphics.FromHwnd(WindowHandler);
-            DoubleBuffer doubleBuffer = new DoubleBuffer();
-
             if (WindowHandler == IntPtr.Zero)
             {
                 throw new Exception("Please set WindowHandler to WinAPI");
@@ -28,6 +34,10 @@ namespace _3D_Engine
             float fps = 0;
             int frame = 0;
             float elapsedTime = DateTime.Now.Second;
+            graphics = Graphics.FromHwnd(WindowHandler);
+
+            ThreadPool.QueueUserWorkItem(new WaitCallback(ClearBuffer));
+            
             while (true)
             {
                 frame++;
@@ -37,17 +47,13 @@ namespace _3D_Engine
                     frame = 0;
                    elapsedTime = DateTime.Now.Second;
                 }
-                doubleBuffer.ChangeGraphics(ref graphics);
-                graphics.Clear(Color.Black);
 
                 //Message stuff
                 PeekMessage(ref msg, WindowHandler, 0, 0, 1);
                 TranslateMessage(ref msg);
                 OnUpdate();
+                BufferSwap.SwapGraphics(ref graphics);
                 DispatchMessage(ref msg);
-
-                graphics = Graphics.FromHwnd(WindowHandler);
-                graphics.DrawImage(doubleBuffer.GetMainBitmap(), new Point(0,0));
                 SetWindowText(WindowHandler, $"{fps}");
             }
         }

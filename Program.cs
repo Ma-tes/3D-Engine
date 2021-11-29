@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 using _3D_Engine.WinEnums;
@@ -22,8 +23,10 @@ namespace _3D_Engine
         private Random random = new Random();
         private Rectangle BoxPositions = new Rectangle(80, 80, 51, 51);
         private Point CursorPosition = new Point();
-        private Rectangle WindowPosition = new Rectangle(); 
-
+        private Rectangle WindowPosition = new Rectangle();
+        private Point ObjectPoint = new Point(25, 25);
+        private Point LastObjectPoint;
+        private Vector2 LastMouseCoord = Vector2.Zero();
         public void Load()
         {
             var wHandle = new WNDCLASSEX
@@ -58,11 +61,37 @@ namespace _3D_Engine
         {
             GetCursorPos(ref CursorPosition);
             Vector2 mouseCoord = Cursor.GetCursorPosition();
-            Console.WriteLine($"[x] = {mouseCoord.X} [y] = {mouseCoord.Y}");
             GetWindowRect(WindowHandler, ref WindowPosition);
-            Image image = Image.FromFile(@"C:\Users\uzivatel\Desktop\Snímek obrazovky 2021-11-12 220753.jpg");
-            graphics.DrawImage(image, new Point(mouseCoord.X - (image.Width / 2), mouseCoord.Y - (image.Height / 2)));
-            graphics.DrawEllipse(new Pen(Color.White, 20), BoxPositions);
+            BufferSwap.OnGraphics.DrawEllipse(new Pen(Color.White, 2), BoxPositions);
+            BoxPositions.X = ObjectPoint.X;
+            BoxPositions.Y = ObjectPoint.Y;
+            if (OnInput(ConsoleKey.Spacebar)) 
+            {
+                ObjectPoint = new Point(mouseCoord.X - (BoxPositions.Width / 2), mouseCoord.Y - (BoxPositions.Height / 2));
+            }
+
+            if ((mouseCoord.X >= BoxPositions.X && mouseCoord.X <= BoxPositions.X + BoxPositions.Width) && (mouseCoord.Y >= BoxPositions.Y && mouseCoord.Y <= BoxPositions.Y + BoxPositions.Width)) 
+            {
+                graphics.DrawString("Collide", new Font("Press Start K", 5), Brushes.White, new PointF(5, 5));
+                int plusX = mouseCoord.X - LastMouseCoord.X;
+                int plusY = mouseCoord.Y - LastMouseCoord.Y;
+
+                for (int i = 0; i < 100; i++)
+                {
+                    if(plusX != 0)
+                        ObjectPoint.X += plusX / Math.Abs(plusX);
+                    if(plusY != 0)
+                        ObjectPoint.Y += plusY / Math.Abs(plusY);
+
+                    BoxPositions.X = ObjectPoint.X;
+                    BoxPositions.Y = ObjectPoint.Y;
+                    BufferSwap.OnGraphics.DrawEllipse(new Pen(Color.White, 2), BoxPositions);
+                }
+            }
+            else
+                LastMouseCoord = mouseCoord;
+
+            BufferSwap.OnGraphics.DrawString($"[x] = {mouseCoord.X} [y] = {mouseCoord.Y}", new Font("Press Start K", 5), Brushes.White, new PointF(25, 25));
         }
     }
 }

@@ -21,4 +21,26 @@ namespace _3D_Engine
             MainGraphics = Graphics.FromImage(BackupBitmap);
         }
     }
+    public static class BufferSwap
+    {
+
+        private static Bitmap[] TempBitmaps = new Bitmap[] {new Bitmap(500,500), new Bitmap(500,500)};
+
+        public static int Index = 0;
+
+        public static Graphics OnGraphics = Graphics.FromImage(TempBitmaps[1]); 
+
+        public static void SwapGraphics(ref Graphics hwndGraphics) 
+        {
+            var lastBuffer = Index; 
+            OnGraphics = Graphics.FromImage(TempBitmaps[Index]);
+            SwapGrap();
+            hwndGraphics.DrawImage(TempBitmaps[lastBuffer], new Point(0, 0));
+        }
+
+        public static void SwapGrap() 
+        {
+            Index = Math.Abs(Index - 1);
+        } 
+    }
 }
