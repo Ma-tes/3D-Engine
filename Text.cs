@@ -12,7 +12,7 @@ namespace _3D_Engine
 
         private static ConsoleColor Color { get; set; }
 
-
+        //TODO...
     }
 
     sealed class TextAlign 
@@ -21,6 +21,6 @@ namespace _3D_Engine
 
         private int TextCounter = 0;
 
-
+        //TODO...
     }
 }

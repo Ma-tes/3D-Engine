@@ -12,17 +12,23 @@ namespace _3D_Engine
     abstract class WinAPI
     {
         protected  WndProc MyDefWndProc = MyWndProc;
-        protected  Graphics graphics = Graphics.FromHwnd(IntPtr.Zero);
-        public static IntPtr WindowHandler = IntPtr.Zero;
-        protected  PS PaintStructure = new();
-        private DoubleBuffer doubleBuffer = new DoubleBuffer();
 
-        private void ClearBuffer(object callback) 
+        protected  Graphics graphics = Graphics.FromHwnd(IntPtr.Zero);
+
+        public static IntPtr WindowHandler = IntPtr.Zero;
+
+        protected  PS PaintStructure = new();
+
+        public BufferSwap BufferSwap = new BufferSwap(500,500);
+
+        private void RefreshBuffer(object callback) 
         {
             while (true) 
             {
+                    BufferSwap.SwapBuffer();
             }
         }
+
         public void Update()
         {
             MSG msg = new MSG();
@@ -36,7 +42,7 @@ namespace _3D_Engine
             float elapsedTime = DateTime.Now.Second;
             graphics = Graphics.FromHwnd(WindowHandler);
 
-            ThreadPool.QueueUserWorkItem(new WaitCallback(ClearBuffer));
+            ThreadPool.QueueUserWorkItem(new WaitCallback(RefreshBuffer));
             
             while (true)
             {
@@ -45,14 +51,14 @@ namespace _3D_Engine
                 {
                     fps = frame;
                     frame = 0;
-                   elapsedTime = DateTime.Now.Second;
+                    elapsedTime = DateTime.Now.Second;
                 }
 
                 //Message stuff
                 PeekMessage(ref msg, WindowHandler, 0, 0, 1);
                 TranslateMessage(ref msg);
                 OnUpdate();
-                BufferSwap.SwapGraphics(ref graphics);
+                    BufferSwap.RenderNewFrame(ref graphics);
                 DispatchMessage(ref msg);
                 SetWindowText(WindowHandler, $"{fps}");
             }

@@ -17,7 +17,7 @@ namespace _3D_Engine
             test.Load();
         }
     }
-    internal class WinTestProgram : WinAPI
+    internal sealed class WinTestProgram : WinAPI
     {
         public Pen pen = new Pen(Color.White);
         private Random random = new Random();
@@ -25,8 +25,6 @@ namespace _3D_Engine
         private Point CursorPosition = new Point();
         private Rectangle WindowPosition = new Rectangle();
         private Point ObjectPoint = new Point(25, 25);
-        private Point LastObjectPoint;
-        private Vector2 LastMouseCoord = Vector2.Zero();
         public void Load()
         {
             var wHandle = new WNDCLASSEX
@@ -62,17 +60,19 @@ namespace _3D_Engine
             GetCursorPos(ref CursorPosition);
             Vector2 mouseCoord = Cursor.GetCursorPosition();
             GetWindowRect(WindowHandler, ref WindowPosition);
-            BufferSwap.OnGraphics.DrawEllipse(new Pen(Color.White, 2), BoxPositions);
+            //BufferSwap.GraphicsTemp[BufferSwap.Indexer].DrawEllipse(new Pen(Color.White, 2), BoxPositions);
+            //BufferSwap.MainBitmap.SetPixel(BoxPositions.X, BoxPositions.Y, Color.White);
             BoxPositions.X = ObjectPoint.X;
             BoxPositions.Y = ObjectPoint.Y;
             if (OnInput(ConsoleKey.Spacebar)) 
             {
                 ObjectPoint = new Point(mouseCoord.X - (BoxPositions.Width / 2), mouseCoord.Y - (BoxPositions.Height / 2));
+                    ObjectPoint.X++;
+                    BufferSwap.Buffers[BufferSwap.Indexer].SetPixel(ObjectPoint.X, ObjectPoint.Y, Color.White);
             }
-
-            if ((mouseCoord.X >= BoxPositions.X && mouseCoord.X <= BoxPositions.X + BoxPositions.Width) && (mouseCoord.Y >= BoxPositions.Y && mouseCoord.Y <= BoxPositions.Y + BoxPositions.Width)) 
+            /*if ((mouseCoord.X >= BoxPositions.X && mouseCoord.X <= BoxPositions.X + BoxPositions.Width) && (mouseCoord.Y >= BoxPositions.Y && mouseCoord.Y <= BoxPositions.Y + BoxPositions.Width)) 
             {
-                graphics.DrawString("Collide", new Font("Press Start K", 5), Brushes.White, new PointF(5, 5));
+                //graphics.DrawString("Collide", new Font("Press Start K", 5), Brushes.White, new PointF(5, 5));
                 int plusX = mouseCoord.X - LastMouseCoord.X;
                 int plusY = mouseCoord.Y - LastMouseCoord.Y;
 
@@ -83,15 +83,15 @@ namespace _3D_Engine
                     if(plusY != 0)
                         ObjectPoint.Y += plusY / Math.Abs(plusY);
 
-                    BoxPositions.X = ObjectPoint.X;
-                    BoxPositions.Y = ObjectPoint.Y;
-                    BufferSwap.OnGraphics.DrawEllipse(new Pen(Color.White, 2), BoxPositions);
+                    BoxPositions.X++;
+                    BufferSwap.Buffers[BufferSwap.Indexer].SetPixel(BoxPositions.X, BoxPositions.Y, Color.White);
                 }
             }
             else
                 LastMouseCoord = mouseCoord;
-
-            BufferSwap.OnGraphics.DrawString($"[x] = {mouseCoord.X} [y] = {mouseCoord.Y}", new Font("Press Start K", 5), Brushes.White, new PointF(25, 25));
+            
+            */
+            //BufferSwap.GraphicsTemp[BufferSwap.Indexer].DrawString($"[x] = {mouseCoord.X} [y] = {mouseCoord.Y}", new Font("Press Start K", 5), Brushes.White, new PointF(25, 25));
         }
     }
 }

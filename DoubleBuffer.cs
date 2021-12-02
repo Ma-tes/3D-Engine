@@ -7,40 +7,32 @@ using System.Threading.Tasks;
 
 namespace _3D_Engine
 {
-    public class DoubleBuffer //TODO Different Name
-    {
-        private readonly Bitmap BackupBitmap = new Bitmap(500, 500); //TODO Auto X-Y set 
-
-        public Bitmap GetMainBitmap() 
-        {
-            return BackupBitmap; 
-        }
-
-        public void ChangeGraphics(ref Graphics MainGraphics) 
-        {
-            MainGraphics = Graphics.FromImage(BackupBitmap);
-        }
-    }
-    public static class BufferSwap
+    public class BufferSwap
     {
 
-        private static Bitmap[] TempBitmaps = new Bitmap[] {new Bitmap(500,500), new Bitmap(500,500)};
+        private Bitmap EmptyBuffer;
 
-        public static int Index = 0;
+        public Bitmap[] Buffers;
 
-        public static Graphics OnGraphics = Graphics.FromImage(TempBitmaps[1]); 
+        public int Indexer = 0; // 0 is Primary
 
-        public static void SwapGraphics(ref Graphics hwndGraphics) 
+        public BufferSwap(int width, int heigth) 
         {
-            var lastBuffer = Index; 
-            OnGraphics = Graphics.FromImage(TempBitmaps[Index]);
-            SwapGrap();
-            hwndGraphics.DrawImage(TempBitmaps[lastBuffer], new Point(0, 0));
+            Buffers = new Bitmap[]{ new Bitmap(width, heigth), new Bitmap(width, heigth) };
+            EmptyBuffer = new Bitmap(width, heigth);
+            Buffers[0].Tag = "Primary";
+            Buffers[1].Tag = "Secondary";
         }
-
-        public static void SwapGrap() 
+        public void RenderNewFrame(ref Graphics hwndGraphics) 
         {
-            Index = Math.Abs(Index - 1);
-        } 
+            hwndGraphics.DrawImage(Buffers[ReverseIndexer()], new Point(0,0)); // Primary buffer is write on main buffer 
+        }
+        public void SwapBuffer() 
+        {
+            Buffers[ReverseIndexer()] = Buffers[Indexer]; //Primary now is equal to old Secondary
+            Buffers[Indexer] = EmptyBuffer;
+            Indexer = ReverseIndexer();
+        }
+        private protected int ReverseIndexer() => (Math.Abs(Indexer - 1));
     }
 }
