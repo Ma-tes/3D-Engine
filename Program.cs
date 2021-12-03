@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
+using _3D_Engine.Engine;
 using _3D_Engine.WinEnums;
 using _3D_Engine.WinStructs;
 
@@ -67,8 +68,8 @@ namespace _3D_Engine
             if (OnInput(ConsoleKey.Spacebar)) 
             {
                 ObjectPoint = new Point(mouseCoord.X - (BoxPositions.Width / 2), mouseCoord.Y - (BoxPositions.Height / 2));
-                    ObjectPoint.X++;
-                    BufferSwap.Buffers[BufferSwap.Indexer].SetPixel(ObjectPoint.X, ObjectPoint.Y, Color.White);
+                ObjectPoint.X++;
+                Renderer.TryDraw(ObjectPoint.X, ObjectPoint.Y, Color4.White);
             }
             /*if ((mouseCoord.X >= BoxPositions.X && mouseCoord.X <= BoxPositions.X + BoxPositions.Width) && (mouseCoord.Y >= BoxPositions.Y && mouseCoord.Y <= BoxPositions.Y + BoxPositions.Width)) 
             {

@@ -1,11 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Diagnostics;
 using _3D_Engine.WinEnums;
 using _3D_Engine.WinStructs;
-using System.Threading;
 
-namespace _3D_Engine
+namespace _3D_Engine.Engine
 {
     public delegate int WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
@@ -19,15 +19,7 @@ namespace _3D_Engine
 
         protected  PS PaintStructure = new();
 
-        public BufferSwap BufferSwap = new BufferSwap(500,500);
-
-        private void RefreshBuffer(object callback) 
-        {
-            while (true) 
-            {
-                    BufferSwap.SwapBuffer();
-            }
-        }
+        public DoubleBufferedRenderer Renderer { get; } = new(500, 500);
 
         public void Update()
         {
@@ -37,32 +29,30 @@ namespace _3D_Engine
                 throw new Exception("Please set WindowHandler to WinAPI");
             }
 
-            float fps = 0;
-            int frame = 0;
-            float elapsedTime = DateTime.Now.Second;
+            var stopwatch = Stopwatch.StartNew();
+            float fps = 0, frames = 0;
             graphics = Graphics.FromHwnd(WindowHandler);
-
-            ThreadPool.QueueUserWorkItem(new WaitCallback(RefreshBuffer));
             
             while (true)
             {
-                frame++;
-                if ((DateTime.Now.Second - elapsedTime) >= 1) 
+                frames++;
+                if (stopwatch.ElapsedMilliseconds >= 1000L)
                 {
-                    fps = frame;
-                    frame = 0;
-                    elapsedTime = DateTime.Now.Second;
+                    fps = frames / (stopwatch.ElapsedMilliseconds / 1000f);
+                    frames = 0;
+                    stopwatch.Restart();
                 }
 
-                //Message stuff
+                // Message stuff
                 PeekMessage(ref msg, WindowHandler, 0, 0, 1);
                 TranslateMessage(ref msg);
                 OnUpdate();
-                    BufferSwap.RenderNewFrame(ref graphics);
+                Renderer.Render(graphics);
                 DispatchMessage(ref msg);
-                SetWindowText(WindowHandler, $"{fps}");
+                SetWindowText(WindowHandler, $"FPS {(int)fps}");
             }
         }
+
         public virtual void OnUpdate()
         {
         }
@@ -161,59 +151,3 @@ namespace _3D_Engine
 #endregion
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

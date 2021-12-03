@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-namespace _3D_Engine
+namespace _3D_Engine.Engine
 {
     sealed class Cursor : WinAPI
     {
