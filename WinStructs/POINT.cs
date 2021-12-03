@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _3D_Engine.WinStructs
+namespace _3D_Engine.WinStructs;
+
+public struct POINT
 {
-        public struct POINT
-        {
-            public double x;
-            public double y;
-        }
+    public double x;
+    public double y;
 }
